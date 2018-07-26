@@ -1,8 +1,8 @@
 (function(document, window, config) {
 
   'use strict';
-	// This script won't work on IE 6 or 7, so we bail at this point if we detect that UA
-	if (navigator.userAgent.match(/MSIE [67]\./gi)) return;
+  // This script won't work on IE 6 or 7, so we bail at this point if we detect that UA
+  if (navigator.userAgent.match(/MSIE [67]\./gi)) return;
 
   var _config = config || {};
   var forceSyntax = _config.forceSyntax || 0;
@@ -13,8 +13,8 @@
     'Pause': true,
     'Watch to End': true
   };
-	var firstScriptTag;
-	var tag;
+  var firstScriptTag;
+  var tag;
   var key;
 
   for (key in _config.events) {
@@ -27,67 +27,67 @@
 
   }
 
-	if (window.YT) {
+  if (window.YT) {
 
-		init();	
+    init();
 
-	} else {
+  } else {
 
-		// Fetches YouTube JS API
-		tag = document.createElement('script');
-		tag.src = '//www.youtube.com/iframe_api';
-		firstScriptTag = document.getElementsByTagName('script')[0];
-		firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    // Fetches YouTube JS API
+    tag = document.createElement('script');
+    tag.src = '//www.youtube.com/iframe_api';
+    firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-		window.onYouTubeIframeAPIReady = (function(o) {
+    window.onYouTubeIframeAPIReady = (function(o) {
 
-			return function() {
+      return function() {
 
-				if (o) o.apply(this, arguments);
+        if (o) o.apply(this, arguments);
 
-				init();
+        init();
 
-			};	
+      };
 
-		})(window.onYouTubeIframeAPIReady);
+    })(window.onYouTubeIframeAPIReady);
 
-	}
+  }
 
   // Invoked by the YouTube API when it's ready
   function init() {
 
-		if (document.readyState !== 'loading') {
+    if (document.readyState !== 'loading') {
 
-			bind();
+      bind();
 
-		} else {
+    } else {
 
-			// On IE8 this fires on window.load, all other browsers will fire when DOM ready
-			if ('addEventListener' in document) {
+      // On IE8 this fires on window.load, all other browsers will fire when DOM ready
+      if ('addEventListener' in document) {
 
-				addEvent(document, 'DOMContentLoaded', bind);
+        addEvent(document, 'DOMContentLoaded', bind);
 
-			} else {
+      } else {
 
-				addEvent(window, 'load', bind);
+        addEvent(window, 'load', bind);
 
-			}
+      }
 
-		}
+    }
 
   }
 
-	function bind() {
+  function bind() {
 
     var potentialVideos = getTagsAsArr_('iframe').concat(getTagsAsArr_('embed'));
     digestPotentialVideos(potentialVideos);
 
     // Will bind to dynamically added videos
-    if ('addEventListener' in document) { 
+    if ('addEventListener' in document) {
       document.addEventListener('load', bindToNewVideos_, true);
     }
 
-	}
+  }
 
   // Take our videos and turn them into trackable videos with events
   function digestPotentialVideos(potentialVideos) {
@@ -157,8 +157,8 @@
     }
 
     if (!originEnabled(a.search) && loc.hostname.indexOf('localhost') === -1) {
-    
-      var port = loc.port ?  ':' + loc.port : '';
+
+      var port = loc.port ? ':' + loc.port : '';
       var origin = loc.protocol + '%2F%2F' + loc.hostname + port;
 
       a.search = a.search + '&origin=' + origin;
@@ -197,11 +197,11 @@
 
     if (!player) {
 
-      player = new YT.Player(youTubeIframe, {}); 
+      player = new YT.Player(youTubeIframe, {});
 
     }
 
-    if (typeof youTubeIframe.pauseFlag === 'undefined') { 
+    if (typeof youTubeIframe.pauseFlag === 'undefined') {
 
       youTubeIframe.pauseFlag = false;
       player.addEventListener('onStateChange', function(evt) {
@@ -292,7 +292,7 @@
     var stateIndex = evt.data;
     var player = evt.target;
     var targetVideoUrl = player.getVideoUrl();
-    var targetVideoId = targetVideoUrl.match(/[?&]v=([^&#]*)/)[1]; // Extract the ID    
+    var targetVideoId = targetVideoUrl.match(/[?&]v=([^&#]*)/)[1]; // Extract the ID
     var playerState = player.getPlayerState();
     var duration = Math.floor(player.getDuration());
     var marks = getMarks(duration);
@@ -367,31 +367,50 @@
 
     var videoUrl = 'https://www.youtube.com/watch?v=' + videoId;
     var _ga = window.GoogleAnalyticsObject;
+    var _gtag = window.gtag;
 
     if (typeof window[dataLayerName] !== 'undefined' && !_config.forceSyntax) {
+      console.log('1');
 
-      window[dataLayerName].push({
+      if (typeof _gtag === 'function') {
+        gtag('event', 'play', {
+          'event_category': 'Videos',
+          'event_label': videoUrl,
+          'event_action': state
+        });
+      } else {
 
-        'event': 'youTubeTrack',
-        'attributes': {
 
-          'videoUrl': videoUrl,
-          'videoAction': state
+        window[dataLayerName].push({
 
-        }
+          'event': 'youTubeTrack',
+          'attributes': {
 
-      });
+            'videoUrl': videoUrl,
+            'videoAction': state
+
+          }
+
+        });
+      }
 
     } else if (typeof window[_ga] === 'function' &&
       typeof window[_ga].getAll === 'function' &&
       _config.forceSyntax !== 2) {
-
+      console.log('2');
       window[_ga]('send', 'event', 'Videos', state, videoUrl);
 
     } else if (typeof window._gaq !== 'undefined' && forceSyntax !== 1) {
-
+      console.log('3');
       window._gaq.push(['_trackEvent', 'Videos', state, videoUrl]);
 
+    } else if (typeof _gtag !== 'undefined') {
+      console.log('4');
+      gtag('event', 'play', {
+        'event_category': 'Videos',
+        'event_label': videoUrl,
+        'event_action': state
+      });
     }
 
   }
@@ -440,7 +459,7 @@
     var el = evt.target || evt.srcElement;
     var isYT = checkIfYouTubeVideo(el);
 
-    // We only bind to iframes with a YouTube URL with the enablejsapi=1 and 
+    // We only bind to iframes with a YouTube URL with the enablejsapi=1 and
     // origin=<<hostname>> parameters
     if (el.tagName === 'IFRAME' && isYT && jsApiEnabled(el.src) && originEnabled(el.src)) {
 
@@ -484,7 +503,7 @@
  * Tells script to use custom dataLayer name instead of default
  */
 /*
- * v8.1.4
+ * v8.1.5
  * Created by the Google Analytics consultants at http://www.lunametrics.com
  * Written by @SayfSharif and @notdanwilkerson
  * Documentation: https://github.com/lunametrics/youtube-google-analytics/

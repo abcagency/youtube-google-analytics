@@ -1,4 +1,16 @@
-# YouTube Google Analytics & GTM Plugin
+# YouTube GTag, Google Analytics & GTM Plugin
+
+This is an AB&C fork of LunaMetrics' YouTube Google Analytics & GTM Plugin. This adds support for Google's newer GTag object, which was not part of the original project.
+
+##### Build Instructions
+
+1. `npm install`
+2. `grunt`
+
+
+
+----
+
 
 <strong>As of 9/12/17, Google Tag Manager offers native support for tracking YouTube videos (including proper titles!). If you're looking to use GTM to track YouTube videos, we'd recommend using their native integration over our script.</strong>
 
@@ -13,7 +25,7 @@ By default, the plugin will track Play, Pause, Watch to End, and 10%, 25%, 50%, 
 
 The plugin will automatically bind to all videos on the page on DOMContentLoaded (window.load on IE8). The plugin will also bind to videos added inserted dynamically after DOMContentLoaded, as long as the following parameters are present in the <code>src</code> attribute of the <code>iframe</code>, e.g.:
 
-    <iframe src="https://www.youtube.com/embed/M7lc1UVf-VE?enablejsapi=1&origin=http%3A%2F%2Fwww.example.com"></iframe>    
+    <iframe src="https://www.youtube.com/embed/M7lc1UVf-VE?enablejsapi=1&origin=http%3A%2F%2Fwww.example.com"></iframe>
 
 ## Installation & Documentation
 
