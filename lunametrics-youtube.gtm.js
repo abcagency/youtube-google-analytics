@@ -370,7 +370,6 @@
     var _gtag = window.gtag;
 
     if (typeof window[dataLayerName] !== 'undefined' && !_config.forceSyntax) {
-      console.log('1');
 
       if (typeof _gtag === 'function') {
         gtag('event', 'play', {
@@ -379,8 +378,6 @@
           'event_action': state
         });
       } else {
-
-
         window[dataLayerName].push({
 
           'event': 'youTubeTrack',
@@ -397,20 +394,11 @@
     } else if (typeof window[_ga] === 'function' &&
       typeof window[_ga].getAll === 'function' &&
       _config.forceSyntax !== 2) {
-      console.log('2');
       window[_ga]('send', 'event', 'Videos', state, videoUrl);
 
     } else if (typeof window._gaq !== 'undefined' && forceSyntax !== 1) {
-      console.log('3');
       window._gaq.push(['_trackEvent', 'Videos', state, videoUrl]);
 
-    } else if (typeof _gtag !== 'undefined') {
-      console.log('4');
-      gtag('event', 'play', {
-        'event_category': 'Videos',
-        'event_label': videoUrl,
-        'event_action': state
-      });
     }
 
   }
