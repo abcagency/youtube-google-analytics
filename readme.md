@@ -1,6 +1,6 @@
 # YouTube GTag, Google Analytics & GTM Plugin
 
-This is an AB&C fork of LunaMetrics' YouTube Google Analytics & GTM Plugin. This adds support for Google's newer GTag object, which was not part of the original project.
+This is AB&C's fork of LunaMetrics' YouTube Google Analytics & GTM Plugin. This adds support for Google's newer GTag object, which was not part of the original project.
 
 ##### Build Instructions
 
