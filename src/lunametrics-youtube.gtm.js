@@ -7,6 +7,8 @@
   var _config = config || {};
   var forceSyntax = _config.forceSyntax || 0;
   var dataLayerName = _config.dataLayerName || 'dataLayer';
+  var videoTitle = '';
+
   // Default configuration for events
   var eventsFired = {
     'Play': true,
@@ -212,6 +214,23 @@
 
     }
 
+    if (player.getVideoUrl) {
+      var targetVideoUrl = player.getVideoUrl();
+      var targetVideoId = targetVideoUrl.match(/[?&]v=([^&#]*)/)[1]; // Extract the ID
+
+      var key = 'AIzaSyD_yiIEY8hqhry-I7arfxtu1KuKPlaIKCI';
+      var jsonApi = 'https://www.googleapis.com/youtube/v3/videos?part=snippet&id=' + targetVideoId + '&key=' + key;
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', jsonApi);
+      xhr.onload = function() {
+          if (xhr.status === 200) {
+              var response = JSON.parse(xhr.response);
+              videoTitle = response.items[0].snippet.title;
+          }
+      };
+      xhr.send();
+    }
   }
 
   // Returns key/value pairs of percentages: number of seconds to achieve
@@ -374,7 +393,7 @@
       if (typeof _gtag === 'function') {
         gtag('event', 'play', {
           'event_category': 'Videos',
-          'event_label': videoUrl,
+          'event_label': videoUrl + ' ' + videoTitle,
           'event_action': state
         });
       } else {
@@ -452,6 +471,9 @@
     if (el.tagName === 'IFRAME' && isYT && jsApiEnabled(el.src) && originEnabled(el.src)) {
 
       addYouTubeEvents(el);
+
+
+
 
     }
 
